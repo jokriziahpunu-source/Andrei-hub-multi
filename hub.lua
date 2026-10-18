@@ -1,5 +1,5 @@
 --[[
-    Andrei Multi Hub v2.1
+    Paul Hub v2.1
     Steal an Egg script hub — GUI + runner
     Tabs: Keyless / Key System / Animations / Misc / Config
     Misc: Floating Icon (draggable toggle)
@@ -8,7 +8,7 @@
 
 -- ============ CONFIG ============
 local CFG = {
-    Name    = "Andrei Multi Hub",
+    Name    = "Paul Hub",
     Version = "v2.1",
     Accent  = Color3.fromRGB(120, 140, 255),
     BG      = Color3.fromRGB(18, 18, 24),
@@ -21,7 +21,7 @@ local CFG = {
     Bad     = Color3.fromRGB(230, 110, 110),
 }
 
-local CONFIG_FILE = "AndreiMultiHub_config.json"
+local CONFIG_FILE = "PaulHub_config.json"
 
 -- ============ SCRIPTS ============
 local HUB_SCRIPTS = {
@@ -35,7 +35,9 @@ local HUB_SCRIPTS = {
             { name = "Cat Hub",    url = "https://raw.githubusercontent.com/showscript-hub/Script/refs/heads/main/Cat-hub" },
             { name = "Khay v6",    url = "https://api.obscuravm.com/scripts/7982111783414007510" },
             { name = "Leon",       url = "https://raw.githubusercontent.com/n01771542-cmd/faluahub/main/main.lua" },
-            { name = "Nexora Hub", url = "https://raw.githubusercontent.com/Dayvinksthik/Script/refs/heads/main/Games/JoshBNS-Crack.lua" },
+            { name = "Sena v6",    url = "https://senahub.xyz/senav6" },
+            { name = "Realkid",    url = "https://raw.githubusercontent.com/realkidhub/realkid/refs/heads/main/main.lua" },
+            { name = "Equinox Anti-Hit", url = "https://api.jnkie.com/api/v1/luascripts/public/3db06e0eaa1e4e8bf5e9d3192fa71e0bad2d1d1af5b11c0a58e6b708ad4487f4/download", pre = 'getgenv().SCRIPT_KEY = "KEYLESS"' },
         },
     },
     {
@@ -115,8 +117,8 @@ local function create(class, props)
 end
 
 local parent = getParent()
-if parent:FindFirstChild("AndreiMultiHub") then
-    parent.AndreiMultiHub:Destroy()
+if parent:FindFirstChild("PaulHub") then
+    parent.PaulHub:Destroy()
 end
 
 -- ============ STATE ============
@@ -129,7 +131,7 @@ local State = {
 
 -- ============ GUI ============
 local gui = create("ScreenGui", {
-    Name = "AndreiMultiHub",
+    Name = "PaulHub",
     ResetOnSpawn = false,
     ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
     Parent = parent,
@@ -280,7 +282,7 @@ local icon = create("TextButton", {
     Position = UDim2.new(0, State.iconPos.x, 1, -State.iconPos.y),
     AnchorPoint = Vector2.new(0, 1),
     BackgroundColor3 = CFG.Panel,
-    Text = "AMH",
+    Text = "PH",
     TextColor3 = CFG.Accent,
     Font = Enum.Font.GothamBold,
     TextSize = 16,
@@ -479,11 +481,15 @@ local function makeHeader(text)
     })
 end
 
-local function runScript(name, url)
+local function runScript(name, url, pre)
     task.spawn(function()
         setStatus("Loading " .. name .. "...", CFG.SubText)
         toast("Loading " .. name, CFG.SubText)
         local ok, err = pcall(function()
+            if pre then
+                local preFn = loadstring(pre)
+                if preFn then preFn() end
+            end
             local src = game:HttpGet(url)
             local fn = loadstring(src)
             if type(fn) ~= "function" then error("loadstring returned nil") end
@@ -495,7 +501,7 @@ local function runScript(name, url)
         else
             setStatus(name .. " failed", CFG.Bad)
             toast(name .. " failed", CFG.Bad)
-            warn("[Andrei Multi Hub] " .. name .. " failed: " .. tostring(err))
+            warn("[" .. CFG.Name .. "] " .. name .. " failed: " .. tostring(err))
         end
     end)
 end
@@ -550,7 +556,7 @@ local function renderScriptList(scripts)
     local shown = 0
     for _, s in ipairs(scripts) do
         if searchText == "" or s.name:lower():find(searchText:lower(), 1, true) then
-            makeButton(s.name, function() runScript(s.name, s.url) end)
+            makeButton(s.name, function() runScript(s.name, s.url, s.pre) end)
             shown = shown + 1
         end
     end
@@ -782,4 +788,4 @@ end
 pcall(loadConfig, false)
 
 showTab(1)
-toast("Andrei Multi Hub v2.1 ready", CFG.Accent)
+toast(CFG.Name .. " " .. CFG.Version .. " ready", CFG.Accent)
