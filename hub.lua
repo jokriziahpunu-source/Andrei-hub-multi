@@ -1,5 +1,5 @@
 --[[
-    Paul Hub v2.1
+    Paul Hub v2.3
     Steal an Egg script hub — GUI + runner
     Tabs: Keyless / Key System / Animations / Misc / Config
     Misc: Floating Icon (draggable toggle)
@@ -9,7 +9,7 @@
 -- ============ CONFIG ============
 local CFG = {
     Name    = "Paul Hub",
-    Version = "v2.1",
+    Version = "v2.3",
     Accent  = Color3.fromRGB(120, 140, 255),
     BG      = Color3.fromRGB(18, 18, 24),
     Panel   = Color3.fromRGB(26, 26, 34),
@@ -36,7 +36,12 @@ local HUB_SCRIPTS = {
             { name = "Khay v6",    url = "https://api.obscuravm.com/scripts/7982111783414007510" },
             { name = "Leon",       url = "https://raw.githubusercontent.com/n01771542-cmd/faluahub/main/main.lua" },
             { name = "Sena v6",    url = "https://senahub.xyz/senav6" },
-            { name = "Realkid",    url = "https://raw.githubusercontent.com/realkidhub/realkid/refs/heads/main/main.lua" },
+            { name = "Venyx Hub",  url = "https://raw.githubusercontent.com/tienkhanh1/Venyx/main/VenyxHub" },
+            { name = "Tsuo",       url = "https://raw.githubusercontent.com/Tsuo7/TsuoHub/main/stealanegg" },
+            { name = "Limbo Hub",  url = "https://limbohub.my.id/loader.lua" },
+            { name = "Clouth Hub", url = "https://raw.githubusercontent.com/ClouthubOnTop/Loader/main/main.lua" },
+            { name = "Tokyo Hub",  url = "https://flowauth.net/v1/loaders/c3a94b11eb467eff27a09e065565501f.lua" },
+            { name = "Chilli v6",  url = "https://id.tomroblox.com/raw/kairoblox/chilli-x-venyx-viet-hoa-v6-vip-pro98" },
             { name = "Equinox Anti-Hit", url = "https://api.jnkie.com/api/v1/luascripts/public/3db06e0eaa1e4e8bf5e9d3192fa71e0bad2d1d1af5b11c0a58e6b708ad4487f4/download", pre = 'getgenv().SCRIPT_KEY = "KEYLESS"' },
         },
     },
@@ -49,33 +54,40 @@ local HUB_SCRIPTS = {
             { name = "Clover",        url = "https://cloverhub.app/clover.lua" },
             { name = "Speed Hub",     url = "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua" },
             { name = "Nasi Rendang",  url = "https://raw.githubusercontent.com/JualNasiRendang/loader/refs/heads/main/main.lua" },
+            { name = "Realkid",       url = "https://raw.githubusercontent.com/realkidhub/realkid/refs/heads/main/main.lua" },
+            { name = "Chilli v5",     url = "https://raw.githubusercontent.com/ronnei/hihi/refs/heads/main/chillihubv5.lua" },
         },
     },
 }
 
 -- ============ ANIMATIONS ============
+-- Function para i-decode yung mga naka-reverse na ID
+local function dec(rev)
+    return tonumber(rev:reverse())
+end
+
 local ANIMS = {
     R6 = {
-        { name = "Idle", id = 180435571 }, { name = "Walk", id = 180426354 },
-        { name = "Run", id = 180426354 }, { name = "Jump", id = 125750702 },
-        { name = "Fall", id = 180436148 }, { name = "Climb", id = 180436334 },
-        { name = "Sit", id = 178130996 }, { name = "Tool None", id = 182393478 },
-        { name = "Tool Slash", id = 129967390 }, { name = "Tool Lunge", id = 129967478 },
-        { name = "Wave", id = 128777973 }, { name = "Point", id = 128853357 },
-        { name = "Dance", id = 182435998 }, { name = "Dance2", id = 182436842 },
-        { name = "Dance3", id = 182491037 }, { name = "Laugh", id = 128874794 },
-        { name = "Cheer", id = 129004052 },
+        { name = "Idle", id = dec("175534081") }, { name = "Walk", id = dec("453624081") },
+        { name = "Run", id = dec("453624081") }, { name = "Jump", id = dec("207057521") },
+        { name = "Fall", id = dec("841634081") }, { name = "Climb", id = dec("433634081") },
+        { name = "Sit", id = dec("699031871") }, { name = "Tool None", id = dec("874393281") },
+        { name = "Tool Slash", id = dec("093769921") }, { name = "Tool Lunge", id = dec("874769921") },
+        { name = "Wave", id = dec("379777821") }, { name = "Point", id = dec("753358821") },
+        { name = "Dance", id = dec("899534281") }, { name = "Dance2", id = dec("248634281") },
+        { name = "Dance3", id = dec("730194281") }, { name = "Laugh", id = dec("497478821") },
+        { name = "Cheer", id = dec("250400921") },
     },
     R15 = {
-        { name = "Idle", id = 507766666 }, { name = "Walk", id = 507777826 },
-        { name = "Run", id = 507767714 }, { name = "Jump", id = 507765000 },
-        { name = "Fall", id = 507767968 }, { name = "Climb", id = 507765644 },
-        { name = "Sit", id = 2506281703 }, { name = "Tool None", id = 507768133 },
-        { name = "Tool Slash", id = 507768375 }, { name = "Tool Lunge", id = 507768680 },
-        { name = "Wave", id = 507770239 }, { name = "Point", id = 507770453 },
-        { name = "Dance", id = 507771019 }, { name = "Dance2", id = 507771955 },
-        { name = "Dance3", id = 507772104 }, { name = "Laugh", id = 507770818 },
-        { name = "Cheer", id = 507770677 },
+        { name = "Idle", id = dec("666667705") }, { name = "Walk", id = dec("628777705") },
+        { name = "Run", id = dec("417767705") }, { name = "Jump", id = dec("000567705") },
+        { name = "Fall", id = dec("869767705") }, { name = "Climb", id = dec("446567705") },
+        { name = "Sit", id = dec("3071826052") }, { name = "Tool None", id = dec("331867705") },
+        { name = "Tool Slash", id = dec("573867705") }, { name = "Tool Lunge", id = dec("086867705") },
+        { name = "Wave", id = dec("932077705") }, { name = "Point", id = dec("354077705") },
+        { name = "Dance", id = dec("910177705") }, { name = "Dance2", id = dec("559177705") },
+        { name = "Dance3", id = dec("401277705") }, { name = "Laugh", id = dec("818077705") },
+        { name = "Cheer", id = dec("776077705") },
     },
 }
 
