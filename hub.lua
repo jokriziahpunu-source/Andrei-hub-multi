@@ -1,15 +1,15 @@
 --[[
-    Paul Hub v2.6
+    Paul Hub v3.0
     Steal an Egg script hub — GUI + runner
     Tabs: Keyless / Key System / Animations / Misc / Config
-    Misc: Floating Icon (draggable toggle)
+    Misc: Floating Icon, Anti-Kick, Anti-Guard, Low Server Finder, Discord
     Mobile-friendly
 ]]
 
 -- ============ CONFIG ============
 local CFG = {
     Name    = "Paul Hub",
-    Version = "v2.6",
+    Version = "v3.0",
     Accent  = Color3.fromRGB(120, 140, 255),
     BG      = Color3.fromRGB(18, 18, 24),
     Panel   = Color3.fromRGB(26, 26, 34),
@@ -122,6 +122,7 @@ local Players = game:GetService("Players")
 local HS      = game:GetService("HttpService")
 local Camera  = workspace.CurrentCamera
 local LP      = Players.LocalPlayer
+local TS      = game:GetService("TeleportService")
 
 local function getParent()
     if gethui then
@@ -153,6 +154,8 @@ local State = {
     iconOn     = true,
     iconPos    = { x = 40, y = 120 },
     iconSize   = 56,
+    antiKick   = false,
+    antiGuard  = false,
 }
 
 -- ============ GUI ============
@@ -197,7 +200,6 @@ create("Frame", {
     BorderSizePixel = 0,
 })
 
--- LOGO SA TITLE BAR
 create("ImageLabel", {
     Parent = titleBar,
     Position = UDim2.new(0, 10, 0, 8),
@@ -312,7 +314,6 @@ local function toast(msg, color)
     end)
 end
 
--- FLOATING ICON
 local icon = create("ImageButton", {
     Parent = gui,
     Size = UDim2.new(0, State.iconSize, 0, State.iconSize),
@@ -621,7 +622,7 @@ local function renderAnimTab()
 
     makeHeader("R6 — Built-in")
     for _, a in ipairs(ANIMS.R6) do
-        makeButton(a.name .. "  [" .. a.id .. "]", function()
+        makeButton(a.name, function() -- Tinanggal ang ID dito
             local ok, err = applyAnim(a.name, a.id)
             toast(ok and ("R6 " .. a.name .. " set") or tostring(err), ok and CFG.Good or CFG.Bad)
         end)
@@ -629,7 +630,7 @@ local function renderAnimTab()
 
     makeHeader("R15 — Built-in")
     for _, a in ipairs(ANIMS.R15) do
-        makeButton(a.name .. "  [" .. a.id .. "]", function()
+        makeButton(a.name, function() -- Tinanggal ang ID dito
             local ok, err = applyAnim(a.name, a.id)
             toast(ok and ("R15 " .. a.name .. " set") or tostring(err), ok and CFG.Good or CFG.Bad)
         end)
@@ -670,10 +671,114 @@ local function renderAnimTab()
     setStatus("Animations", CFG.SubText)
 end
 
+-- Server Hop Logic (Lowest Players First)
+local function serverHop(lowestPlayers)
+    local placeId = game.PlaceId
+    local jobId = game.JobId
+    local url = "https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?sortOrder=Asc&limit=100"
+    
+    toast("Finding server...", CFG.SubText)
+    
+    local success, response = pcall(function()
+        return game:HttpGet(url)
+    end)
+    
+    if not success or not response then
+        toast("Failed to fetch servers", CFG.Bad)
+        return
+    end
+    
+    local ok, data = pcall(function() return HS:JSONDecode(response) end)
+    if not ok or not data or not data.data then 
+        toast("Server data error", CFG.Bad)
+        return 
+    end
+    
+    local servers = data.data
+    if not servers or #servers == 0 then
+        toast("No servers found", CFG.Bad)
+        return
+    end
+
+    if lowestPlayers then
+        -- I-sort yung servers from lowest to highest based sa dami ng tao
+        table.sort(servers, function(a, b)
+            return a.playing < b.playing
+        end)
+    end
+    
+    local targetServer = nil
+    local targetPlayers = 0
+    
+    for _, server in ipairs(servers) do
+        if server.id ~= jobId and server.playing < server.maxPlayers then
+            targetServer = server.id
+            targetPlayers = server.playing
+            break
+        end
+    end
+    
+    if targetServer then
+        toast("Hopping to server with " .. targetPlayers .. " players...", CFG.Good)
+        task.wait(1)
+        pcall(function()
+            TS:TeleportToPlaceInstance(placeId, targetServer, LP)
+        end)
+    else
+        toast("No available servers found", CFG.Bad)
+    end
+end
+
+-- Anti-Kick / Anti-Guard Hook
+if hookmetamethod then
+    local mt = getrawmetatable(game)
+    local old = mt.__namecall
+    setreadonly(mt, false)
+    mt.__namecall = newcclosure(function(self, ...)
+        local method = getnamecallmethod()
+        if State.antiKick and method == "Kick" and self == LP then
+            return nil
+        end
+        if State.antiGuard and method == "TakeDamage" and self:IsA("Humanoid") and self.Parent == LP.Character then
+            return nil
+        end
+        return old(self, ...)
+    end)
+    setreadonly(mt, true)
+end
+
 local function renderMiscTab()
     clearContent()
     searchFrame.Visible = false
     content.Position = UDim2.new(0, 10, 0, 78)
+
+    makeHeader("Server Hop")
+    makeButton("Server Hop (Any)", function()
+        serverHop(false)
+    end)
+    makeButton("Server Hop (Lowest Players)", function()
+        serverHop(true)
+    end)
+
+    makeHeader("Security")
+    
+    local kickBtn = makeButton("Anti-Kick: " .. (State.antiKick and "ON" or "OFF"), function() end)
+    kickBtn.MouseButton1Click:Connect(function()
+        State.antiKick = not State.antiKick
+        kickBtn.Text = "  Anti-Kick: " .. (State.antiKick and "ON" or "OFF")
+        kickBtn.TextColor3 = State.antiKick and CFG.Good or CFG.Text
+        toast("Anti-Kick " .. (State.antiKick and "enabled" or "disabled"), State.antiKick and CFG.Good or CFG.Bad)
+    end)
+    kickBtn.TextColor3 = State.antiKick and CFG.Good or CFG.Text
+
+    local guardBtn = makeButton("Anti-Guard: " .. (State.antiGuard and "ON" or "OFF"), function() end)
+    guardBtn.MouseButton1Click:Connect(function()
+        State.antiGuard = not State.antiGuard
+        guardBtn.Text = "  Anti-Guard: " .. (State.antiGuard and "ON" or "OFF")
+        guardBtn.TextColor3 = State.antiGuard and CFG.Good or CFG.Text
+        toast("Anti-Guard " .. (State.antiGuard and "enabled" or "disabled"), State.antiGuard and CFG.Good or CFG.Bad)
+    end)
+    guardBtn.TextColor3 = State.antiGuard and CFG.Good or CFG.Text
 
     makeHeader("Floating Icon")
 
@@ -730,7 +835,7 @@ local function renderMiscTab()
         toast("Drag icon anywhere • Tap icon to open/close hub", CFG.SubText)
     end)
 
-    setStatus("Misc — Floating Icon", CFG.SubText)
+    setStatus("Misc — Security & Utils", CFG.SubText)
 end
 
 local function saveConfig()
@@ -740,6 +845,8 @@ local function saveConfig()
         iconOn   = State.iconOn,
         iconPos  = State.iconPos,
         iconSize = State.iconSize,
+        antiKick = State.antiKick,
+        antiGuard= State.antiGuard,
     }
     local ok, encoded = pcall(function() return HS:JSONEncode(payload) end)
     if not ok then toast("encode failed", CFG.Bad) return false end
@@ -759,6 +866,8 @@ local function loadConfig(applyAnims)
 
     State.anims = decoded.anims or {}
     if decoded.iconOn ~= nil then setIconVisible(decoded.iconOn) end
+    if decoded.antiKick ~= nil then State.antiKick = decoded.antiKick end
+    if decoded.antiGuard ~= nil then State.antiGuard = decoded.antiGuard end
     if decoded.iconPos then
         State.iconPos.x = decoded.iconPos.x or 40
         State.iconPos.y = decoded.iconPos.y or 120
