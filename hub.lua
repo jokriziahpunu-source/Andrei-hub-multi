@@ -1,5 +1,5 @@
 --[[
-    Paul Hub v2.4
+    Paul Hub v2.6
     Steal an Egg script hub — GUI + runner
     Tabs: Keyless / Key System / Animations / Misc / Config
     Misc: Floating Icon (draggable toggle)
@@ -9,7 +9,7 @@
 -- ============ CONFIG ============
 local CFG = {
     Name    = "Paul Hub",
-    Version = "v2.4",
+    Version = "v2.6",
     Accent  = Color3.fromRGB(120, 140, 255),
     BG      = Color3.fromRGB(18, 18, 24),
     Panel   = Color3.fromRGB(26, 26, 34),
@@ -76,7 +76,6 @@ local HUB_SCRIPTS = {
 }
 
 -- ============ ANIMATIONS ============
--- Function para i-decode yung mga naka-reverse na ID
 local function dec(rev)
     return tonumber(rev:reverse())
 end
@@ -182,6 +181,7 @@ local main = create("Frame", {
 create("UICorner", { CornerRadius = UDim.new(0, 10), Parent = main })
 create("UIStroke", { Color = CFG.Accent, Thickness = 1.5, Transparency = 0.6, Parent = main })
 
+-- Title bar
 local titleBar = create("Frame", {
     Parent = main,
     Size = UDim2.new(1, 0, 0, 36),
@@ -197,10 +197,19 @@ create("Frame", {
     BorderSizePixel = 0,
 })
 
+-- LOGO SA TITLE BAR
+create("ImageLabel", {
+    Parent = titleBar,
+    Position = UDim2.new(0, 10, 0, 8),
+    Size = UDim2.new(0, 20, 0, 20),
+    BackgroundTransparency = 1,
+    Image = "https://raw.githubusercontent.com/jokriziahpunu-source/Andrei-hub-multi/main/logo.png",
+})
+
 create("TextLabel", {
     Parent = titleBar,
-    Position = UDim2.new(0, 14, 0, 0),
-    Size = UDim2.new(1, -110, 1, 0),
+    Position = UDim2.new(0, 38, 0, 0),
+    Size = UDim2.new(1, -130, 1, 0),
     BackgroundTransparency = 1,
     Text = CFG.Name .. "  " .. CFG.Version,
     TextColor3 = CFG.Text,
@@ -303,16 +312,15 @@ local function toast(msg, color)
     end)
 end
 
-local icon = create("TextButton", {
+-- FLOATING ICON
+local icon = create("ImageButton", {
     Parent = gui,
     Size = UDim2.new(0, State.iconSize, 0, State.iconSize),
     Position = UDim2.new(0, State.iconPos.x, 1, -State.iconPos.y),
     AnchorPoint = Vector2.new(0, 1),
     BackgroundColor3 = CFG.Panel,
-    Text = "PH",
-    TextColor3 = CFG.Accent,
-    Font = Enum.Font.GothamBold,
-    TextSize = 16,
+    BackgroundTransparency = 1,
+    Image = "https://raw.githubusercontent.com/jokriziahpunu-source/Andrei-hub-multi/main/logo.png",
     BorderSizePixel = 0,
     AutoButtonColor = false,
     Visible = State.iconOn,
@@ -368,7 +376,6 @@ local function setIconSize(px)
     px = math.clamp(px, 36, 96)
     State.iconSize = px
     icon.Size = UDim2.new(0, px, 0, px)
-    icon.TextSize = math.floor(px * 0.28)
     icon.Position = UDim2.new(0, State.iconPos.x, 1, -State.iconPos.y)
 end
 
@@ -702,6 +709,20 @@ local function renderMiscTab()
         setIconVisible(true)
         main.Visible = false
         toast("Minimized", CFG.SubText)
+    end)
+
+    makeHeader("Community")
+    makeButton("Join Discord", function()
+        local discordLink = "https://discord.gg/MMkUjtfpn"
+        if setclipboard then
+            setclipboard(discordLink)
+            toast("Discord link copied!", CFG.Good)
+        elseif toclipboard then
+            toclipboard(discordLink)
+            toast("Discord link copied!", CFG.Good)
+        else
+            toast("Link: " .. discordLink, CFG.SubText)
+        end
     end)
 
     makeHeader("How to use")
