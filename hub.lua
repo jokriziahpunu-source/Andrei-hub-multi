@@ -1,5 +1,5 @@
 --[[
-    Paul Hub v2.3
+    Paul Hub v2.4
     Steal an Egg script hub — GUI + runner
     Tabs: Keyless / Key System / Animations / Misc / Config
     Misc: Floating Icon (draggable toggle)
@@ -9,7 +9,7 @@
 -- ============ CONFIG ============
 local CFG = {
     Name    = "Paul Hub",
-    Version = "v2.3",
+    Version = "v2.4",
     Accent  = Color3.fromRGB(120, 140, 255),
     BG      = Color3.fromRGB(18, 18, 24),
     Panel   = Color3.fromRGB(26, 26, 34),
@@ -43,6 +43,17 @@ local HUB_SCRIPTS = {
             { name = "Tokyo Hub",  url = "https://flowauth.net/v1/loaders/c3a94b11eb467eff27a09e065565501f.lua" },
             { name = "Chilli v6",  url = "https://id.tomroblox.com/raw/kairoblox/chilli-x-venyx-viet-hoa-v6-vip-pro98" },
             { name = "Equinox Anti-Hit", url = "https://api.jnkie.com/api/v1/luascripts/public/3db06e0eaa1e4e8bf5e9d3192fa71e0bad2d1d1af5b11c0a58e6b708ad4487f4/download", pre = 'getgenv().SCRIPT_KEY = "KEYLESS"' },
+            { name = "Xuan",       url = "https://raw.githubusercontent.com/xuann-hubb/loaderV2/refs/heads/main/LoaderV2.lua" },
+            { name = "Solaris Hub",url = "https://api.obscuravm.com/scripts/3657260198619051144" },
+            { name = "Miranda Hub",url = "https://raw.githubusercontent.com/miirandahub/loader/main/stealaeggs" },
+            { name = "Foxname",    url = "https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/Fn-stealanegg.lua" },
+            { name = "Solix",      url = "https://solixhub.com/loader" },
+            { name = "Null Hub",   url = "https://nullhub-loader.vercel.app/loader" },
+            { name = "Blyxo Hub",  url = "https://flowauth.net/v1/loaders/69d3463240384f3a73fbe32c178093a2.lua" },
+            { name = "Yokudo Hub", url = "https://raw.githubusercontent.com/betdoyvaka/stealanegg/main/Loader.lua" },
+            { name = "Lumin Hub",  url = "https://scriptblox.com/raw/Steal-An-Egg-Lumin-Hub-223771" },
+            { name = "Darkness Hub",url = "https://raw.githubusercontent.com/Darkness-KingScripts/Steal-a-egg/refs/heads/main/Darknesshub" },
+            { name = "KAZUMI",     url = "https://pastefy.app/J4wosPYe/raw" },
         },
     },
     {
@@ -56,6 +67,10 @@ local HUB_SCRIPTS = {
             { name = "Nasi Rendang",  url = "https://raw.githubusercontent.com/JualNasiRendang/loader/refs/heads/main/main.lua" },
             { name = "Realkid",       url = "https://raw.githubusercontent.com/realkidhub/realkid/refs/heads/main/main.lua" },
             { name = "Chilli v5",     url = "https://raw.githubusercontent.com/ronnei/hihi/refs/heads/main/chillihubv5.lua" },
+            { name = "Fyy",           url = "https://FyyCommunity.com" },
+            { name = "Pig Hub",       url = "https://raw.githubusercontent.com/mopsscript7-gif/steal-an-egg/refs/heads/main/script.lua" },
+            { name = "Zerion",        url = "https://zeroinhub.com/api/script" },
+            { name = "Neox Hub",      url = "https://scriptblox.com/raw/Steal-An-Egg-NEOX-HUB-or-AUTOFARM-EGGS-or-PLACE-AND-HATCH-ALL-EGGS-or-and-MUCH-224830" },
         },
     },
 }
